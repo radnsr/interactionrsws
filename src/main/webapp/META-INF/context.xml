@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/Interactions" >
+
+  <Resource type="javax.sql.DataSource"
+                   name="jdbc/interactions"
+                   auth="Container"
+                   factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                   driverClassName="com.mysql.jdbc.Driver"
+                   url="jdbc:mysql://localhost:3306/interactions_db?autoReconnect=true&amp;autoReconnectForPools=true"
+                   username="root"
+                   password="qwasz2004!"
+                   initialSize="20"
+                   maxActive="600"
+                   maxIdle="30"
+                   minIdle="15"
+                   maxWait="5000"
+                   testOnBorrow="true"
+                   testWhileIdle="true"
+                   validationQuery="SELECT 1"
+                   timeBetweenEvictionRunsMillis="35000"
+                   minEvictableIdleTimeMillis="55000"
+                   removeAbandoned="true"
+                   removeAbandonedTimeout="3600"
+                   validationInterval="35000"
+                   closeMethod="close"/>
+</Context>
