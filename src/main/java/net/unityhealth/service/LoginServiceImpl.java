@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
+//import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ import net.unityhealth.model.AdminUsers;
 import net.unityhealth.model.ProductInfo;
 import net.unityhealth.model.TblInteractionsLogger;
 import net.unityhealth.repository.ProductRepository;
-import  net.unityhealth.repository.InteractionsActivityLogger;
+import net.unityhealth.repository.InteractionsActivityLogger;
 import net.unityhealth.security.TokenInfo;
 import net.unityhealth.security.TokenManager;
 
@@ -57,10 +57,9 @@ public class LoginServiceImpl implements LoginService {
 	private ProductRepository productRepository;
 	@Autowired
 	private InteractionsRepository interactionsRepository;
-        
-          @Autowired
-        private InteractionsActivityLogger interactionsActivityLogger;
-  
+
+	@Autowired
+	private InteractionsActivityLogger interactionsActivityLogger;
 
 	@Override
 	public String findLoggedInUsername() {
@@ -97,7 +96,7 @@ public class LoginServiceImpl implements LoginService {
 		this.tokenManager = tokenManager;
 	}
 
-	@PostConstruct
+	// @PostConstruct
 	public void init() {
 		System.out.println(" *** AuthenticationServiceImpl.init with: " + applicationContext);
 	}
@@ -185,7 +184,7 @@ public class LoginServiceImpl implements LoginService {
 		ProductInfo productInfo = new ProductInfo();
 		List<Object> ingList = productRepository.findIngsByProdId(vProductId);
 		List<String> ingStrList = new ArrayList<String>();
-                Integer result = Integer.valueOf(0);
+		Integer result = Integer.valueOf(0);
 		for (Object ingredient : ingList) {
 			Object[] objArr = (Object[]) ingredient;
 			System.out.println((String) objArr[1]);
@@ -193,24 +192,25 @@ public class LoginServiceImpl implements LoginService {
 				ingStrList.add(((String) objArr[1]).trim());
 		}
 		// getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList)));
-		
-		if(ingStrList.size()>0){
+
+		if (ingStrList.size() > 0) {
 			productInfo.setProductId(vProductId);
-			
-			if(!ingList.isEmpty()){
-				Object[] objArr = (Object[])ingList.get(0);
-				productInfo.setProductName((String)objArr[0]);
+
+			if (!ingList.isEmpty()) {
+				Object[] objArr = (Object[]) ingList.get(0);
+				productInfo.setProductName((String) objArr[0]);
 			}
-			productInfo.setInteractions(getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList))));
-			
+			productInfo.setInteractions(
+					getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList))));
+
 		}
-                if (!productInfo.getInteractions().isEmpty()) {
-      result = Integer.valueOf(1);
-    }
-    logActivity(vProductId, "product", result);
-			
-			return productInfo;
-		
+		if (!productInfo.getInteractions().isEmpty()) {
+			result = Integer.valueOf(1);
+		}
+		logActivity(vProductId, "product", result);
+
+		return productInfo;
+
 	}
 
 	private SearchContent formSearchContent(List<Object> resultList) {
@@ -236,15 +236,14 @@ public class LoginServiceImpl implements LoginService {
 	}
 
 	private List<SearchResult> getSearchResults(SearchContent sContent) {
-		
 
 		// ServletContext context = request.getSession().getServletContext();
 		String db = "interactions";// context.getInitParameter("DB_CONNECTION_MAIN");
 		InteractionSearchDAO sDAO = new InteractionSearchDAO(db);
-                
-                InteractionSearchDAO sDAO2 = new InteractionSearchDAO(db);
-                InteractionSearchDAO sDAO3 = new InteractionSearchDAO(db);
-                   List<SearchResult> searchResults = new ArrayList<SearchResult>();
+
+		InteractionSearchDAO sDAO2 = new InteractionSearchDAO(db);
+		InteractionSearchDAO sDAO3 = new InteractionSearchDAO(db);
+		List<SearchResult> searchResults = new ArrayList<SearchResult>();
 		boolean userSearch = sContent.isUserSearch();
 		String herbID = sContent.getHerbID();
 		String drugID = sContent.getDrugID();
@@ -259,148 +258,179 @@ public class LoginServiceImpl implements LoginService {
 //			System.out.println(searchResults.get(0));
 //			return searchResults;
 //		}
-  System.out.println("herbIDs.length > 0 " +  "" +  herbIDs.length );
-                    System.out.println("drugIDs.length > 0 " +  "" +  drugIDs.length );
-                     System.out.println("drugClassIDs.length > 0 " +  "" +  drugClassIDs.length );
-System.out.println(String.format("SearchContent INPUT [%s]", sContent));
-                if ( drugIDs.length > 0 ) {
-                  
-			
-                         searchResults.addAll(sDAO2.getSearchResults(userSearch, herbID, drugID, drugClassID,
-					null, drugIDs, null, searchStr));
+		System.out.println("herbIDs.length > 0 " + "" + herbIDs.length);
+		System.out.println("drugIDs.length > 0 " + "" + drugIDs.length);
+		System.out.println("drugClassIDs.length > 0 " + "" + drugClassIDs.length);
+		System.out.println(String.format("SearchContent INPUT [%s]", sContent));
+		if (drugIDs.length > 0) {
+
+			searchResults.addAll(
+					sDAO2.getSearchResults(userSearch, herbID, drugID, drugClassID, null, drugIDs, null, searchStr));
 			System.out.println(searchResults.get(0));
-			//return searchResults;
-                        
+			// return searchResults;
+
 		}
-                 if (herbIDs.length > 0  ) {
-                     System.out.println("drugIDs.length > 0 " +  "" +  drugIDs.length );
-			 // searchResults =
-                                searchResults.addAll(sDAO.getSearchResults(userSearch, herbID, drugID, drugClassID,
-					herbIDs, null, null, searchStr));
+		if (herbIDs.length > 0) {
+			System.out.println("drugIDs.length > 0 " + "" + drugIDs.length);
+			// searchResults =
+			searchResults.addAll(
+					sDAO.getSearchResults(userSearch, herbID, drugID, drugClassID, herbIDs, null, null, searchStr));
 			System.out.println(searchResults.get(0));
-			//return searchResults;
+			// return searchResults;
 		}
-		
-                  if (drugClassIDs.length > 0) {
-                      System.out.println("drugClassIDs.length > 0 " +  "" +  drugClassIDs.length );
-			 searchResults.addAll(sDAO3.getSearchResults(userSearch, herbID, drugID, drugClassID,
-					null, null, drugClassIDs, searchStr));
+
+		if (drugClassIDs.length > 0) {
+			System.out.println("drugClassIDs.length > 0 " + "" + drugClassIDs.length);
+			searchResults.addAll(sDAO3.getSearchResults(userSearch, herbID, drugID, drugClassID, null, null,
+					drugClassIDs, searchStr));
 			System.out.println(searchResults.get(0));
-			//return searchResults;
+			// return searchResults;
 		}
 		System.out.println("System.out.println(searchResults.get(0));" + searchResults.get(0));
-                 System.out.println("searchResults.size()...." + searchResults.size());
-		return  searchResults;
-		
+		System.out.println("searchResults.size()...." + searchResults.size());
+		return searchResults;
+
 		// return Response.status(201).entity(searchResults).build();
 	}
-	
+
 	@Override
 	public ProductInfo getSearchResultsFromPartNo(String vPartNo) {
 		// TODO Auto-generated method stub
 		ProductInfo productInfo = new ProductInfo();
 		List<Object> ingList = productRepository.findIngsByPartNo(vPartNo);
 		List<String> ingStrList = new ArrayList<String>();
-                Integer result = Integer.valueOf(0);
+		Integer result = Integer.valueOf(0);
 		for (Object ingredient : ingList) {
 			Object[] objArr = (Object[]) ingredient;
 			System.out.println((String) objArr[1]);
 			if (!StringUtils.isEmpty(((String) objArr[1])))
 				ingStrList.add(((String) objArr[1]).trim());
 		}
-		if(ingStrList.size()>0){
+		if (ingStrList.size() > 0) {
 			productInfo.setPartNo(vPartNo);
-			
-			if(!ingList.isEmpty()){
-				Object[] objArr = (Object[])ingList.get(0);
-				productInfo.setProductName((String)objArr[0]);
+
+			if (!ingList.isEmpty()) {
+				Object[] objArr = (Object[]) ingList.get(0);
+				productInfo.setProductName((String) objArr[0]);
 			}
-			productInfo.setInteractions(getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList))));
-			
+			productInfo.setInteractions(
+					getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList))));
+
 		}
-                  if (!productInfo.getInteractions().isEmpty()) {
-      result = Integer.valueOf(1);
-    }
-    logActivity(vPartNo, "part", result);
-			
-			return productInfo;
+		if (!productInfo.getInteractions().isEmpty()) {
+			result = Integer.valueOf(1);
+		}
+		logActivity(vPartNo, "part", result);
+
+		return productInfo;
 	}
 
-    @Override
-    public ProductInfo getSerachResultsByIngredients(List<String> vIngNames) {
-        ProductInfo productInfo = new ProductInfo();
-        //Integer result = Integer.valueOf(0);
-         productInfo.setInteractions(getSearchResults(formSearchContent(interactionsRepository.findByIngName(vIngNames))));
+	@Override
+	public ProductInfo getSerachResultsByIngredients(List<String> vIngNames) {
+		ProductInfo productInfo = new ProductInfo();
+		// Integer result = Integer.valueOf(0);
+		productInfo
+				.setInteractions(getSearchResults(formSearchContent(interactionsRepository.findByIngName(vIngNames))));
 //             if (!productInfo.getInteractions().isEmpty()) {
 //      result = Integer.valueOf(1);
 //    }
 //    logActivity(vIngNames.get(0), "part", result);
-			
-         return productInfo;
-    }
 
-    private void logActivity(String value, String type, String userID, Integer result){
-        if( userID == null)
-        logActivity( value,  type,  result);
-        else{
-            TblInteractionsLogger logger = new TblInteractionsLogger();
-             if (type.equals("ingredients"))
-    {
-      logger.setCommonname(value);
-      logger.setProductid(null);
-      logger.setUserid(userID);
-    }
-             // logger.setCommonname(null);
-    logger.setDatetime(new Date());
-    logger.setIngredientid(null);
-    
-    logger.setResult(result);
-    //logger.setUserid(null);
-    this.interactionsActivityLogger.save(logger);
-        }
-    }
-    
-private void logActivity(String value, String type, Integer result)
-  {
-    TblInteractionsLogger logger = new TblInteractionsLogger();
-    if (type.equals("part"))
-    {
-      logger.setPartno(value);
-      logger.setProductid(null);
-    }
-    if (type.equals("ingredients"))
-    {
-      logger.setCommonname(value);
-      logger.setProductid(null);
-    }
-    else
-    {
-      logger.setProductid(value);
-      logger.setPartno(null);
-    }
-    logger.setCommonname(null);
-    logger.setDatetime(new Date());
-    logger.setIngredientid(null);
-    
-    logger.setResult(result);
-    logger.setUserid(null);
-    this.interactionsActivityLogger.save(logger);
-  }
+		return productInfo;
+	}
 
-    @Override
-    public ProductInfo getSerachResultsByIngredients(List<String> vIngNames, String userID) {
-         ProductInfo productInfo = getSerachResultsByIngredients(vIngNames);
-          Integer result = Integer.valueOf(0);
-                      if (!productInfo.getInteractions().isEmpty()) {
-      result = Integer.valueOf(1);
-    }
-                      StringBuilder sb = new StringBuilder();
-                      for(String ingName:vIngNames){
-                          sb.append(ingName);
-                          sb.append(",");
-                      }
-    logActivity(sb.toString(), "ingredients",userID, result);
-			
-         return productInfo;
-    }
+	private void logActivity(String value, String type, String userID, Integer result) {
+		if (userID == null)
+			logActivity(value, type, result);
+		else {
+			TblInteractionsLogger logger = new TblInteractionsLogger();
+			if (type.equals("ingredients")) {
+				logger.setCommonname(value);
+				logger.setProductid(null);
+				logger.setUserid(userID);
+			}
+			// logger.setCommonname(null);
+			logger.setDatetime(new Date());
+			logger.setIngredientid(null);
+
+			logger.setResult(result);
+			// logger.setUserid(null);
+			this.interactionsActivityLogger.save(logger);
+		}
+	}
+
+	private void logActivity(String value, String type, Integer result) {
+		TblInteractionsLogger logger = new TblInteractionsLogger();
+		if (type.equals("part")) {
+			logger.setPartno(value);
+			logger.setProductid(null);
+		}
+		if (type.equals("ingredients")) {
+			logger.setCommonname(value);
+			logger.setProductid(null);
+		} else {
+			logger.setProductid(value);
+			logger.setPartno(null);
+		}
+		logger.setCommonname(null);
+		logger.setDatetime(new Date());
+		logger.setIngredientid(null);
+
+		logger.setResult(result);
+		logger.setUserid(null);
+		this.interactionsActivityLogger.save(logger);
+	}
+
+	@Override
+	public ProductInfo getSerachResultsByIngredients(List<String> vIngNames, String userID) {
+		ProductInfo productInfo = getSerachResultsByIngredients(vIngNames);
+		Integer result = Integer.valueOf(0);
+		if (!productInfo.getInteractions().isEmpty()) {
+			result = Integer.valueOf(1);
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String ingName : vIngNames) {
+			sb.append(ingName);
+			sb.append(",");
+		}
+		logActivity(sb.toString(), "ingredients", userID, result);
+
+		return productInfo;
+	}
+
+	public ProductInfo getSearchResultsFromLicenseId(String vLicenseId) {
+		
+		ProductInfo productInfo = new ProductInfo();
+		List<Object> ingList = new ArrayList<>();
+		
+		if (vLicenseId.contains("-")) {
+			ingList = productRepository.findIngsByLicenseId(vLicenseId);
+		} else {
+			ingList = productRepository.findIngsByAustlId(vLicenseId);
+		}
+		
+		List<String> ingStrList = new ArrayList<String>();
+		Integer result = Integer.valueOf(0);
+		for (Object ingredient : ingList) {
+			Object[] objArr = (Object[]) ingredient;
+			System.out.println((String) objArr[1]);
+			if (!StringUtils.isEmpty(((String) objArr[1])))
+				ingStrList.add(((String) objArr[1]).trim());
+		}
+		// getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList)));
+		if (ingStrList.size() > 0) {
+			productInfo.setProductId(vLicenseId);
+			if (!ingList.isEmpty()) {
+				Object[] objArr = (Object[]) ingList.get(0);
+				productInfo.setProductName((String) objArr[0]);
+			}
+			productInfo.setInteractions(getSearchResults(formSearchContent(interactionsRepository.findByIngName(ingStrList))));
+		}
+		if (!productInfo.getInteractions().isEmpty()) {
+			result = Integer.valueOf(1);
+		}
+		logActivity(vLicenseId, "license", result);
+
+		return productInfo;
+	}
 }

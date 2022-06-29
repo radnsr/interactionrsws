@@ -2,7 +2,6 @@ package net.unityhealth.service;
 
 import java.util.List;
 
-import com.unityhealth.imgateway.interactions.db.model.SearchResult;
 
 import net.unityhealth.model.AdminUsers;
 import net.unityhealth.model.ProductInfo;
@@ -26,8 +25,8 @@ public interface LoginService {
 
 	/**
 	 * Checks the authentication token and if it is valid prepares
-	 * {@link org.springframework.security.core.context.SecurityContext} and
-	 * returns true.
+	 * {@link org.springframework.security.core.context.SecurityContext} and returns
+	 * true.
 	 */
 	boolean checkToken(String token);
 
@@ -35,8 +34,8 @@ public interface LoginService {
 	void logout(String token);
 
 	/**
-	 * Returns current user or {@code null} if there is no authentication or
-	 * user is anonymous.
+	 * Returns current user or {@code null} if there is no authentication or user is
+	 * anonymous.
 	 */
 	AdminUsers currentUser();
 
@@ -46,8 +45,11 @@ public interface LoginService {
 
 	ProductInfo getSearchResultsFromProductId(String vProductId);
 
-	ProductInfo getSearchResultsFromPartNo(String vPartNo); 
-        
-        ProductInfo getSerachResultsByIngredients(List<String> vIngNames);
-         ProductInfo getSerachResultsByIngredients(List<String> vIngNames,String userID);
+	ProductInfo getSearchResultsFromPartNo(String vPartNo);
+
+	ProductInfo getSerachResultsByIngredients(List<String> vIngNames);
+
+	ProductInfo getSerachResultsByIngredients(List<String> vIngNames, String userID);
+
+	ProductInfo getSearchResultsFromLicenseId(String vLicenseId);
 }
