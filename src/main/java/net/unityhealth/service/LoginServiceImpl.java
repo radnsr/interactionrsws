@@ -29,8 +29,12 @@ import com.unityhealth.imgateway.web.service.model.SearchContent;
 import java.util.Date;
 
 import net.unityhealth.interactionsdb.repository.InteractionsRepository;
+import net.unityhealth.interactionsdb.repository.ReportsRepository;
 import net.unityhealth.model.AdminUsers;
+import net.unityhealth.model.DrugInfo;
+import net.unityhealth.model.HerbInfo;
 import net.unityhealth.model.ProductInfo;
+import net.unityhealth.model.Reports;
 import net.unityhealth.model.TblInteractionsLogger;
 import net.unityhealth.repository.ProductRepository;
 import net.unityhealth.repository.InteractionsActivityLogger;
@@ -60,6 +64,9 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private InteractionsActivityLogger interactionsActivityLogger;
+        
+        @Autowired 
+        private ReportsRepository reportsRepository;
 
 	@Override
 	public String findLoggedInUsername() {
@@ -433,4 +440,134 @@ public class LoginServiceImpl implements LoginService {
 
 		return productInfo;
 	}
+        
+       @Override
+    public DrugInfo getSearchResultsByDrugID(String drugId) {
+         DrugInfo drugInfo = new DrugInfo();
+ 
+         
+        SearchContent searchContent = new SearchContent();
+        SearchContent searchContentResult = new SearchContent();
+        List<String> drugIdsLst = new ArrayList<>();
+        drugIdsLst.add(drugId.toString());
+        searchContent.setDrugIDs((String[]) drugIdsLst.toArray(new String[0]));
+        searchContent.setDrugID(drugIdsLst.toString());
+        Integer resultValue = Integer.valueOf(0);
+        
+        //System.out.println("THE SEARCH CONTENT IS : " + searchContent.toString());
+        //System.out.println("THE DRUG LIST IN service IS : " + drugId);
+        
+        List<Object> result = interactionsRepository.findByDrugID(drugId);
+        
+        //System.out.println("THE DRUG RESULT IS : " + result.toString());
+        
+        if(result.size() > 0) {
+        searchContentResult = formSearchContent(result);
+        
+        //System.out.println("THE SEARCH CONTENT RESULT SET  IS : " + searchContentResult.toString());
+        drugInfo.setInteractions(getSearchResults(searchContentResult));
+        drugInfo.setDrugID(drugId);
+	//productInfo.setInteractions(getSearchResultsbyDrugID(searchContent));	
+        
+        }
+        if (!drugInfo.getInteractions().isEmpty()) {
+            resultValue = Integer.valueOf(1);
+        }
+
+        logActivity(drugId, "drug", resultValue);
+        
+         return drugInfo;
+    }
+    
+    
+    
+    @Override
+    public HerbInfo getSearchResultsByHerbID(String herbID) {
+         HerbInfo herbInfo = new HerbInfo();
+ 
+         
+        SearchContent searchContent = new SearchContent();
+        SearchContent searchContentResult = new SearchContent();
+        List<String> herbIdsLst = new ArrayList<>();
+        herbIdsLst.add(herbID.toString());
+        searchContent.setHerbIDs((String[]) herbIdsLst.toArray(new String[0]));
+        searchContent.setHerbID(herbIdsLst.toString());
+        Integer resultValue = Integer.valueOf(0);
+        
+        //System.out.println("THE SEARCH CONTENT IS : " + searchContent.toString());
+        //System.out.println("THE DRUG LIST IN service IS : " + drugId);
+        
+        List<Object> result = interactionsRepository.findByHerbID(herbID);
+        
+        //System.out.println("THE DRUG RESULT IS : " + result.toString());
+        
+        if(result.size() > 0) {
+        searchContentResult = formSearchContent(result);
+        
+        //System.out.println("THE SEARCH CONTENT RESULT SET  IS : " + searchContentResult.toString());
+        herbInfo.setInteractions(getSearchResults(searchContentResult));
+        herbInfo.setHerbID(herbID);
+	//productInfo.setInteractions(getSearchResultsbyDrugID(searchContent));	
+        
+        }
+        if (!herbInfo.getInteractions().isEmpty()) {
+            resultValue = Integer.valueOf(1);
+        }
+
+        logActivity(herbID, "herb", resultValue);
+        
+         return herbInfo;
+    }
+    
+    
+    @Override
+	public List<Reports> findReportsByGeneralInteractionID(String generalInteractionID) {
+		// TODO Auto-generated method stub
+
+		return  reportsRepository.findByInteractionID(generalInteractionID);
+	}
+    
+    
+//    	private List<SearchResult> getSearchResultsbyDrugID(SearchContent sContent) {
+//		
+//
+//		// ServletContext context = request.getSession().getServletContext();
+//		String db = "interactions";// context.getInitParameter("DB_CONNECTION_MAIN");
+//		InteractionSearchDAO sDAO = new InteractionSearchDAO(db);
+//                
+//                InteractionSearchDAO sDAO2 = new InteractionSearchDAO(db);
+//                InteractionSearchDAO sDAO3 = new InteractionSearchDAO(db);
+//                   List<SearchResult> searchResults = new ArrayList<SearchResult>();
+//		boolean userSearch = true;
+//
+//		String drugID = sContent.getDrugID();
+//                String herbID = "0";
+//                String drugClassID = "0";
+//
+//
+//		String[] drugIDs = {"0"};
+//                
+//		String searchStr = "";
+//                
+//
+//
+//                    System.out.println("drugIDs.length > 0 " +  "" +  drugIDs.length );
+//
+//System.out.println(String.format("SearchContent INPUT [%s]", sContent));
+//                if ( drugIDs.length > 0 ) {
+//                  
+//			
+//                         searchResults.addAll(sDAO2.getSearchResults(userSearch, herbID, drugID, drugClassID,
+//					null, drugIDs, null, searchStr));
+//			System.out.println(searchResults.toString());
+//			//return searchResults;
+//                        
+//		}
+//           
+//		System.out.println("System.out.println(searchResults.get(0));" + searchResults.toString());
+//                 System.out.println("searchResults.size()...." + searchResults.size());
+//		return  searchResults;
+//		
+//		// return Response.status(201).entity(searchResults).build();
+//	}
 }

@@ -16,4 +16,13 @@ public interface InteractionsRepository extends JpaRepository<Herbs, Long> {
 			+ " UNION " + " SELECT DISTINCT t.id, t.name, 'drugclass' as type from tci t, interactionsgeneral ig where t.id > 0 and name  in ?1 and ig.DrugID = t.ID and ig.DocStatus='Approved' "
 		,nativeQuery = true)
 	List<Object> findByIngName(List<String> commonName);
+        
+         @Query(value = 	" SELECT DISTINCT d.id, d.commonname as name, 'drug' as type from drugs d, interactionsgeneral ig where d.id > 0  and d.id = ?1 and ig.DrugID = d.ID and ig.DocStatus='Approved'"
+		,nativeQuery = true)
+	List<Object> findByDrugID(String drugID);
+        
+        
+        @Query(value = 	" SELECT DISTINCT h.id, h.commonname as name, 'herb' as type from herbs h, interactionsgeneral ig where h.id > 0  and h.id = ?1 and ig.HerbID = h.ID and ig.DocStatus='Approved'"
+		,nativeQuery = true)
+	List<Object> findByHerbID(String herbID);
 }

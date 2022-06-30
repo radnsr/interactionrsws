@@ -4,7 +4,10 @@ import java.util.List;
 
 
 import net.unityhealth.model.AdminUsers;
+import net.unityhealth.model.DrugInfo;
+import net.unityhealth.model.HerbInfo;
 import net.unityhealth.model.ProductInfo;
+import net.unityhealth.model.Reports;
 import net.unityhealth.security.TokenInfo;
 
 public interface LoginService {
@@ -51,5 +54,11 @@ public interface LoginService {
 
 	ProductInfo getSerachResultsByIngredients(List<String> vIngNames, String userID);
 
-	ProductInfo getSearchResultsFromLicenseId(String vLicenseId);
+	ProductInfo getSearchResultsFromLicenseId(String vLicenseId);//AusTL Number
+        
+        DrugInfo getSearchResultsByDrugID(String drugId);
+        
+        List<Reports> findReportsByGeneralInteractionID(String generalInteractionID);
+        
+        HerbInfo getSearchResultsByHerbID(String HerbID);
 }
