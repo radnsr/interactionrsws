@@ -21,14 +21,16 @@ public interface ProductRepository extends JpaRepository<Tblproduct, Long> {
 	List<Object> findIngsByPartNo(String vPartNo);
 	
 	@Query(value = "select distinct prod.vName ProdName, case when ISNULL(ing.vCommonName) or ing.vCommonName ='' then ing.vName else ing.vCommonName end as ingName from tblproduct prod"
+			+ " join tblproductbrand prodbrand on prodbrand.iID = prod.iBrandID "
 			+ " join tblproductingredientassoc ingAssoc on prod.iID = ingAssoc.iProductID "
-			+ "join tblproductingredients ing on ingAssoc.iIngredientID = ing.iID where prod.iLicenceId =?1",
+			+ "join tblproductingredients ing on ingAssoc.iIngredientID = ing.iID where prodbrand.bApiEnabled=1 AND prod.iLicenceId =?1",
 			nativeQuery = true)
 	List<Object> findIngsByLicenseId(String vLicenseId);
 	
 	@Query(value = "select distinct prod.vName ProdName, case when ISNULL(ing.vCommonName) or ing.vCommonName ='' then ing.vName else ing.vCommonName end as ingName from tblproduct prod"
-			+ " join tblproductingredientassoc ingAssoc on prod.iID = ingAssoc.iProductID "
-			+ "join tblproductingredients ing on ingAssoc.iIngredientID = ing.iID where prod.iAUSTL  =?1",
+                       + " join tblproductbrand prodbrand on prodbrand.iID = prod.iBrandID "	
+                       + " join tblproductingredientassoc ingAssoc on prod.iID = ingAssoc.iProductID "
+                       + "join tblproductingredients ing on ingAssoc.iIngredientID = ing.iID where  prodbrand.bApiEnabled=1 AND prod.iAUSTL  =?1",
 			nativeQuery = true)
 	List<Object> findIngsByAustlId(String austlId);
 
